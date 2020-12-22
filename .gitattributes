@@ -1,0 +1,10 @@
+* -text
+
+NuGet.config merge=ours
+
+*.cpp     diff=cpp
+*.cs      diff=csharp
+
+# Declare files that will always have CRLF line endings on checkout.
+#*.sln text eol=crlf
+#*.csproj text eol=crlf
