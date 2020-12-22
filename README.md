@@ -1,5 +1,7 @@
 # Linq.Examples
 
+[![Build Status](https://github.com/blastride/Linq.Examples.svg?branch=main)](https://github.com/blastride/Linq.Examples)
+
 Здесь приводятся задачи по теме Linq в C#.
 На примерах ниже разбираются основные операторы Linq.
 
