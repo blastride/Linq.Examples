@@ -6,6 +6,6 @@
 
         public long ProductId { get; set; }
 
-        public double Rating { get; set; }
+        public int Rating { get; set; }
     }
 }
