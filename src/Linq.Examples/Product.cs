@@ -16,7 +16,7 @@ namespace Linq.Examples
             }
             set => _name = value; }
 
-        public string Category { get; set; }
+        public Category Category { get; set; }
 
         public decimal Price { get; set; }
 
