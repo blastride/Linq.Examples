@@ -24,8 +24,8 @@ namespace Linq.Examples
         {
             return GetEnumerator();
         }
-        
-        public class ProductCollectionIterator : IEnumerator<Product>
+
+        private class ProductCollectionIterator : IEnumerator<Product>
         {
             //Коллекция, по которой осуществляется итерация
             private readonly ProductCollection _collection;
