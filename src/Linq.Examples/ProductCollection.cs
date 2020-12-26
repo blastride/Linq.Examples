@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Linq.Examples
 {
@@ -77,5 +78,16 @@ namespace Linq.Examples
         }
     }
 
+    public static class ProductCollectionExtensions{
     
+        public static IEnumerable<Product> FilterBy(this IEnumerable<Product> products, Category category)
+        {
+            return products.Where(p => p.Category == category);
+        }
+        
+        public static IEnumerable<Product> PriceLessOrEqualThan(this IEnumerable<Product> products, decimal price)
+        {
+            return products.Where(p => p.Price <= price);
+        }
+    }
 }
