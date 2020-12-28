@@ -67,7 +67,7 @@ namespace Linq.Examples
 
             IEnumerable<Product> cheapLaptopsByPriceFirstPage = store.Products
                 .FilterBy(Category.Laptops)
-                .Where(static p => p.Price <= price)
+                .Where(p => p.Price <= price)
                 .OrderBy(p => p.Price)
                 .Take(pageSize);
 
