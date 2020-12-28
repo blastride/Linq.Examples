@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -7,30 +8,40 @@ namespace Linq.Examples
 {
     class Program
     {
-        public static void Task1(Store store)
+        public static void Exercise1(Store store)
         {
-            PrintTaskToConsole("Задание 1. Вывести товары категории “Ноутбуки”.");
+            PrintExerciseTitle("Задание 1. Вывести товары категории “Ноутбуки”.");
 
             IEnumerable<Product> laptops = store.Products.FilterBy(Category.Laptops);
+            //IEnumerable<Product> laptops = store.Products.Where(p => p.Category == Category.Laptops);;
+
+            laptops = from product in store.Products
+                where product.Category == Category.Laptops
+                select product;
 
             PrintProductsToConsole(laptops);
         }
 
-        public static void Task2(Store store)
+        public static void Exercise2(Store store)
         {
-            PrintTaskToConsole("Задание 2. Вывести товары из категории “Ноутбуки” с ценой до 50000.");
+            PrintExerciseTitle("Задание 2. Вывести товары из категории “Ноутбуки” с ценой до 50000.");
 
             IEnumerable<Product> cheapLaptops = store
                 .Products
                 .FilterBy(Category.Laptops)
                 .PriceLessOrEqualThan(50000);
 
+            IEnumerable<Product> laptops = from product in store.Products
+                where product.Category == Category.Laptops && product.Price <= 50000
+                select product;
+
             PrintProductsToConsole(cheapLaptops);
         }
 
-        public static void Task3(Store store)
+        public static void Exercise3(Store store)
         {
-            PrintTaskToConsole("Задание 3. Вывести товары из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
+            PrintExerciseTitle(
+                "Задание 3. Вывести товары из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
 
             IEnumerable<Product> cheapLaptopsByPrice = store
                 .Products
@@ -38,27 +49,35 @@ namespace Linq.Examples
                 .PriceLessOrEqualThan(50000)
                 .OrderByDescending(p => p.Price);
 
+            IEnumerable<Product> laptops = from product in store.Products
+                where product.Category == Category.Laptops && product.Price <= 50000
+                orderby product.Price descending
+                select product;
+
             PrintProductsToConsole(cheapLaptopsByPrice);
         }
 
-        public static void Task4(Store store)
+        public static void Exercise4(Store store)
         {
-            PrintTaskToConsole("Задание 4. Вывести товары из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию, показывать только первую страницу (по 5 товаров на странице)");
+            PrintExerciseTitle(
+                "Задание 4. Вывести товары из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию, показывать только первую страницу (по 5 товаров на странице)");
 
             const int pageSize = 5;
+            const decimal price = 50000;
 
             IEnumerable<Product> cheapLaptopsByPriceFirstPage = store.Products
                 .FilterBy(Category.Laptops)
-                .PriceLessOrEqualThan(50000)
+                .Where(static p => p.Price <= price)
                 .OrderBy(p => p.Price)
                 .Take(pageSize);
 
             PrintProductsToConsole(cheapLaptopsByPriceFirstPage);
         }
 
-        public static void Task5(Store store)
+        public static void Exercise5(Store store)
         {
-            PrintTaskToConsole("Задание 5. Вывести вторую страницу товаров (по 5 товаров на странице) из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
+            PrintExerciseTitle(
+                "Задание 5. Вывести вторую страницу товаров (по 5 товаров на странице) из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
 
             int pageNumber = 1;
             const int pageSize = 5;
@@ -72,9 +91,10 @@ namespace Linq.Examples
             PrintProductsToConsole(cheapLaptopsByPriceSecondPage);
         }
 
-        public static void Task6(Store store)
+        public static void Exercise6(Store store)
         {
-            PrintTaskToConsole("Задание 6. Вывести список всех категорий товаров в алфавитном порядке и количество товаров в них.");
+            PrintExerciseTitle(
+                "Задание 6. Вывести список всех категорий товаров в алфавитном порядке и количество товаров в них.");
 
             var categories = store.Products
                 .GroupBy(p => p.Category)
@@ -83,7 +103,7 @@ namespace Linq.Examples
 
             PrintCategoryList();
 
-            //Локальная функция. Бывает полезной. Смотри Task9!
+            //Локальная функция. Бывает полезной. Смотри Exercise9!
             void PrintCategoryList()
             {
                 StringBuilder output = new StringBuilder();
@@ -98,9 +118,10 @@ namespace Linq.Examples
             }
         }
 
-        public static void Task7(Store store)
+        public static void Exercise7(Store store)
         {
-            PrintTaskToConsole("Задание 7. Вывести среднюю оценку пользователей для товара с названием “Lenovo Thinkpad”.");
+            PrintExerciseTitle(
+                "Задание 7. Вывести среднюю оценку пользователей для товара с названием “Lenovo Thinkpad”.");
 
             // В этом задании для наглядности раскомментировать Console.WriteLine(...) в product.Name, так будет видно, что:
             // 1. Single проходит всю коллекцию даже когда уже нашел нужный элемент, а First - останавливается.
@@ -111,21 +132,23 @@ namespace Linq.Examples
                 .Where(r => r.ProductId == store.Products.Single(p => p.Name == "Lenovo Thinkpad").Id)
                 .Average(r => r.Rating);
 
-            //Console.WriteLine($"Средняя оценка: {avgRating1}."); Console.WriteLine();
-            Console.WriteLine($"Средняя оценка: {avgRating1}.{Environment.NewLine}");
+            Console.WriteLine(
+                $"Средняя оценка: {avgRating1}.{Environment.NewLine}"); //Console.WriteLine($"Средняя оценка: {avgRating1}."); Console.WriteLine();
 
             // Правильный подход:
-            Product thinkpad =
-                store.Products.First(p =>
-                    p.Name == "Lenovo Thinkpad"); // Single, SingleOrDefault, First, FirstOrDefault
+            Product thinkpad = store
+                .Products
+                .First(p => p.Name == "Lenovo Thinkpad"); // Single, SingleOrDefault, First, FirstOrDefault
+
             double avgRating2 = store.Reviews.Where(r => r.ProductId == thinkpad.Id).Average(r => r.Rating);
 
             Console.WriteLine($"Средняя оценка: {avgRating2}.{Environment.NewLine}");
         }
 
-        public static void Task8(Store store)
+        public static void Exercise8(Store store)
         {
-            PrintTaskToConsole("Задание 8. Вывести среднюю оценку пользователей для товара с названием “Asus Zenbook”, у которого пока нет ни одного отзыва.");
+            PrintExerciseTitle(
+                "Задание 8. Вывести среднюю оценку пользователей для товара с названием “Asus Zenbook”, у которого пока нет ни одного отзыва.");
 
             Product asus = store
                 .Products
@@ -136,7 +159,7 @@ namespace Linq.Examples
             // double avgRating3 = store.Reviews.Where(r => r.ProductId == asus.Id).Average(r => r.Rating);
 
             // Правильный подход (значение по умолчанию для пустой коллекции):
-            int defaultRating = 3;
+            const int defaultRating = 3;
 
             double avgRating3 = store
                 .Reviews
@@ -145,14 +168,25 @@ namespace Linq.Examples
                 .DefaultIfEmpty(defaultRating)
                 .Average();
 
+            //Правильный подход без захвата ссылки на переменную.
+            long productId = asus.Id;
+
+            double avgRating = store
+                .Reviews
+                .Where(r => r.ProductId == productId)
+                .Select(r => r.Rating)
+                .DefaultIfEmpty(defaultRating)
+                .Average();
+
             Console.WriteLine($"Средняя оценка: {avgRating3}.{Environment.NewLine}");
         }
 
-        public static void Task9(Store store)
+        public static void Exercise9(Store store)
         {
-            PrintTaskToConsole("Задание 9. Вывести список всех товаров, отсортированный по убыванию средней оценки (для товаров без оценки используется начальная оценка 3.0). " +
-                               "Товары с одинаковой оценкой сортировать в алфавитном порядке по названию товара. Для каждого товара показывать количество отзывов.");
-            
+            PrintExerciseTitle(
+                "Задание 9. Вывести список всех товаров, отсортированный по убыванию средней оценки (для товаров без оценки используется начальная оценка 3.0). " +
+                "Товары с одинаковой оценкой сортировать в алфавитном порядке по названию товара. Для каждого товара показывать количество отзывов.");
+
             int defaultRating = 3;
 
             // Неправильный подход (многократный перебор коллекций):
@@ -167,7 +201,7 @@ namespace Linq.Examples
                 .OrderByDescending(pr => pr.Rating)
                 .ThenBy(pr => pr.ProductName);
 
-            PrintProductRatings();
+            PrintProductRatings(productRatings);
 
             // Правильный подход
             var productRatings2 = store
@@ -184,9 +218,9 @@ namespace Linq.Examples
                 .OrderByDescending(pr => pr.Rating)
                 .ThenBy(pr => pr.ProductName);
 
-            PrintProductRatings();
+            PrintProductRatings(productRatings2);
 
-            void PrintProductRatings()
+            void PrintProductRatings(dynamic productRatings)
             {
                 Console.WriteLine("Оценки товаров:");
                 foreach (var rating in productRatings)
@@ -200,18 +234,19 @@ namespace Linq.Examples
 
         static void Main(string[] args)
         {
-            var store = new Store();
+            Store store = new();
+
             PrintProductsToConsole(store.Products);
 
-            Task1(store);
-            Task2(store);
-            Task3(store);
-            Task4(store);
-            Task5(store);
-            Task6(store);
-            Task7(store);
-            Task8(store);
-            Task9(store);
+            Exercise1(store);
+            Exercise2(store);
+            Exercise3(store);
+            Exercise4(store);
+            Exercise5(store);
+            Exercise6(store);
+            Exercise7(store);
+            Exercise8(store);
+            Exercise9(store);
 
             Console.ReadLine();
         }
@@ -226,11 +261,11 @@ namespace Linq.Examples
             Console.WriteLine();
         }
 
-        private static void PrintTaskToConsole(string taskDescriprion)
+        private static void PrintExerciseTitle(string ExerciseDescriprion)
         {
             Console.ForegroundColor = ConsoleColor.DarkCyan;
-            Console.WriteLine(taskDescriprion);
-            Console.ResetColor();   
+            Console.WriteLine(ExerciseDescriprion);
+            Console.ResetColor();
         }
     }
 }
