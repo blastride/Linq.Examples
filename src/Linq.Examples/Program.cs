@@ -14,11 +14,15 @@ namespace Linq.Examples
             IEnumerable<Product> laptops = store.Products.FilterBy(Category.Laptops);
             //IEnumerable<Product> laptops = store.Products.Where(p => p.Category == Category.Laptops);;
 
-            laptops = from product in store.Products
+            IEnumerable<Product> products = from product in store.Products
                 where product.Category == Category.Laptops
                 select product;
 
+            Console.WriteLine("Точечная нотация.");
             PrintToConsole(laptops);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(products);
         }
 
         public static void Exercise2(Store store)
@@ -34,7 +38,11 @@ namespace Linq.Examples
                 where product.Category == Category.Laptops && product.Price <= 50000
                 select product;
 
+            Console.WriteLine("Точечная нотация.");
             PrintToConsole(cheapLaptops);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(laptops);
         }
 
         public static void Exercise3(Store store)
@@ -53,13 +61,17 @@ namespace Linq.Examples
                 orderby product.Price descending
                 select product;
 
+            Console.WriteLine("Точечная нотация.");
             PrintToConsole(cheapLaptopsByPrice);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(laptops);
         }
 
         public static void Exercise4(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 4. Вывести товары из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию, показывать только первую страницу (по 5 товаров на странице)");
+            PrintExerciseTitle("Задание 4. Вывести товары из категории “Ноутбуки” с ценой до 50000, " +
+                               "отсортировать по цене по возрастанию, показывать только первую страницу (по 5 товаров на странице)");
 
             const int pageSize = 5;
             const decimal price = 50000;
@@ -70,18 +82,22 @@ namespace Linq.Examples
                 .OrderBy(p => p.Price)
                 .Take(pageSize);
 
-            var laptops = (from product in store.Products
+            IEnumerable<Product> laptops = (from product in store.Products
                 where product.Category == Category.Laptops
-                orderby product.Price select product).Take(pageSize);
+                orderby product.Price
+                select product).Take(pageSize);
 
+            Console.WriteLine("Точечная нотация.");
             PrintToConsole(cheapLaptopsByPriceFirstPage);
-            //PrintToConsole(laptops);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(laptops);
         }
 
         public static void Exercise5(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 5. Вывести вторую страницу товаров (по 5 товаров на странице) из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
+            PrintExerciseTitle("Задание 5. Вывести вторую страницу товаров (по 5 товаров на странице) " +
+                               "из категории “Ноутбуки” с ценой до 50000, отсортировать по цене по возрастанию.");
 
             int pageNumber = 1;
             const int pageSize = 5;
@@ -99,21 +115,23 @@ namespace Linq.Examples
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize);
 
+            Console.WriteLine("Точечная нотация.");
             PrintToConsole(cheapLaptopsByPriceSecondPage);
-            //PrintToConsole(laptops);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(laptops);
         }
 
         public static void Exercise6(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 6. Вывести список всех категорий товаров в алфавитном порядке и количество товаров в них.");
+            PrintExerciseTitle("Задание 6. Вывести список всех категорий товаров в алфавитном порядке и количество товаров в них.");
 
             var categories = store.Products
                 .GroupBy(p => p.Category)
                 .Select(group => new {CategoryName = group.Key, ProductCount = group.Count()})
                 .OrderBy(cat => cat.CategoryName);
 
-            var groupedCategories = from product in store.Products
+            var categories2 = from product in store.Products
                 group product by product.Category
                 into grouped
                 select new {CategoryName = grouped.Key, ProductCount = grouped.Count()}
@@ -122,15 +140,19 @@ namespace Linq.Examples
                 select result;
 
 
-            PrintCategoryList();
+            Console.WriteLine("Точечная нотация.");
+            PrintCategoryList(categories);
+
+            Console.WriteLine("SQL нотация.");
+            PrintToConsole(categories2);
 
             //Локальная функция. Бывает полезной. Смотри Exercise9!
-            void PrintCategoryList()
+            void PrintCategoryList(dynamic categoryCollection)
             {
                 StringBuilder output = new StringBuilder();
                 output.AppendLine("Количество товаров по категориям:");
 
-                foreach (var category in categories)
+                foreach (var category in categoryCollection)
                 {
                     output.AppendLine($"{category.CategoryName}: {category.ProductCount} товаров.");
                 }
@@ -141,8 +163,7 @@ namespace Linq.Examples
 
         public static void Exercise7(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 7. Вывести среднюю оценку пользователей для товара с названием “Lenovo Thinkpad”.");
+            PrintExerciseTitle("Задание 7. Вывести среднюю оценку пользователей для товара с названием “Lenovo Thinkpad”.");
 
             // В этом задании для наглядности раскомментировать Console.WriteLine(...) в product.Name, так будет видно, что:
             // 1. Single проходит всю коллекцию даже когда уже нашел нужный элемент, а First - останавливается.
@@ -153,8 +174,7 @@ namespace Linq.Examples
                 .Where(r => r.ProductId == store.Products.Single(p => p.Name == "Lenovo Thinkpad").Id)
                 .Average(r => r.Rating);
 
-            Console.WriteLine(
-                $"Средняя оценка: {avgRating1}.{Environment.NewLine}"); //Console.WriteLine($"Средняя оценка: {avgRating1}."); Console.WriteLine();
+            Console.WriteLine($"Средняя оценка: {avgRating1}.{Environment.NewLine}");
 
             // Правильный подход:
             Product thinkpad = store
@@ -168,8 +188,7 @@ namespace Linq.Examples
 
         public static void Exercise8(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 8. Вывести среднюю оценку пользователей для товара с названием “Asus Zenbook”, у которого пока нет ни одного отзыва.");
+            PrintExerciseTitle("Задание 8. Вывести среднюю оценку пользователей для товара с названием “Asus Zenbook”, у которого пока нет ни одного отзыва.");
 
             Product asus = store
                 .Products
@@ -189,6 +208,8 @@ namespace Linq.Examples
                 .DefaultIfEmpty(defaultRating)
                 .Average();
 
+            Console.WriteLine($"Средняя оценка: {avgRating3}.{Environment.NewLine}");
+
             //Правильный подход без захвата ссылки на переменную.
             long productId = asus.Id;
 
@@ -199,14 +220,14 @@ namespace Linq.Examples
                 .DefaultIfEmpty(defaultRating)
                 .Average();
 
-            Console.WriteLine($"Средняя оценка: {avgRating3}.{Environment.NewLine}");
+            Console.WriteLine($"Средняя оценка: {avgRating}.{Environment.NewLine}");
         }
 
         public static void Exercise9(Store store)
         {
-            PrintExerciseTitle(
-                "Задание 9. Вывести список всех товаров, отсортированный по убыванию средней оценки (для товаров без оценки используется начальная оценка 3.0). " +
-                "Товары с одинаковой оценкой сортировать в алфавитном порядке по названию товара. Для каждого товара показывать количество отзывов.");
+            PrintExerciseTitle("Задание 9. Вывести список всех товаров, отсортированный по убыванию средней оценки " +
+                               "(для товаров без оценки используется начальная оценка 3.0). Товары с одинаковой оценкой сортировать в алфавитном порядке " +
+                               "по названию товара. Для каждого товара показывать количество отзывов.");
 
             int defaultRating = 3;
 
@@ -254,7 +275,7 @@ namespace Linq.Examples
                 into pr
                 orderby pr.Rating, pr.ProductName
                 select pr;
-            
+
             PrintProductRatings(ratings);
 
             void PrintProductRatings(dynamic productRatings)
