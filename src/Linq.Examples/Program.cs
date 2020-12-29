@@ -70,7 +70,12 @@ namespace Linq.Examples
                 .OrderBy(p => p.Price)
                 .Take(pageSize);
 
+            var laptops = (from product in store.Products
+                where product.Category == Category.Laptops
+                orderby product.Price select product).Take(pageSize);
+
             PrintToConsole(cheapLaptopsByPriceFirstPage);
+            //PrintToConsole(laptops);
         }
 
         public static void Exercise5(Store store)
@@ -87,7 +92,15 @@ namespace Linq.Examples
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize);
 
+            var laptops = (from product in store.Products
+                    where product.Category == Category.Laptops
+                    orderby product.Price
+                    select product)
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize);
+
             PrintToConsole(cheapLaptopsByPriceSecondPage);
+            //PrintToConsole(laptops);
         }
 
         public static void Exercise6(Store store)
