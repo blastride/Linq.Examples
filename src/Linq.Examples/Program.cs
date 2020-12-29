@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 
@@ -19,7 +18,7 @@ namespace Linq.Examples
                 where product.Category == Category.Laptops
                 select product;
 
-            PrintProductsToConsole(laptops);
+            PrintToConsole(laptops);
         }
 
         public static void Exercise2(Store store)
@@ -35,7 +34,7 @@ namespace Linq.Examples
                 where product.Category == Category.Laptops && product.Price <= 50000
                 select product;
 
-            PrintProductsToConsole(cheapLaptops);
+            PrintToConsole(cheapLaptops);
         }
 
         public static void Exercise3(Store store)
@@ -54,7 +53,7 @@ namespace Linq.Examples
                 orderby product.Price descending
                 select product;
 
-            PrintProductsToConsole(cheapLaptopsByPrice);
+            PrintToConsole(cheapLaptopsByPrice);
         }
 
         public static void Exercise4(Store store)
@@ -71,7 +70,7 @@ namespace Linq.Examples
                 .OrderBy(p => p.Price)
                 .Take(pageSize);
 
-            PrintProductsToConsole(cheapLaptopsByPriceFirstPage);
+            PrintToConsole(cheapLaptopsByPriceFirstPage);
         }
 
         public static void Exercise5(Store store)
@@ -88,7 +87,7 @@ namespace Linq.Examples
                 .Skip(pageNumber * pageSize)
                 .Take(pageSize);
 
-            PrintProductsToConsole(cheapLaptopsByPriceSecondPage);
+            PrintToConsole(cheapLaptopsByPriceSecondPage);
         }
 
         public static void Exercise6(Store store)
@@ -100,6 +99,15 @@ namespace Linq.Examples
                 .GroupBy(p => p.Category)
                 .Select(group => new {CategoryName = group.Key, ProductCount = group.Count()})
                 .OrderBy(cat => cat.CategoryName);
+
+            var groupedCategories = from product in store.Products
+                group product by product.Category
+                into grouped
+                select new {CategoryName = grouped.Key, ProductCount = grouped.Count()}
+                into result
+                orderby result.CategoryName
+                select result;
+
 
             PrintCategoryList();
 
@@ -220,6 +228,22 @@ namespace Linq.Examples
 
             PrintProductRatings(productRatings2);
 
+            var ratings = from product in store.Products
+                join review in store.Reviews
+                    on product.Id equals review.ProductId
+                    into reviewCollection
+                select new
+                {
+                    ProductName = product.Name,
+                    ReviewCount = reviewCollection.Count(),
+                    Rating = reviewCollection.Select(r => r.Rating).DefaultIfEmpty(defaultRating).Average()
+                }
+                into pr
+                orderby pr.Rating, pr.ProductName
+                select pr;
+            
+            PrintProductRatings(ratings);
+
             void PrintProductRatings(dynamic productRatings)
             {
                 Console.WriteLine("Оценки товаров:");
@@ -232,11 +256,31 @@ namespace Linq.Examples
             }
         }
 
+        public static void Exercise10(Store store)
+        {
+            PrintExerciseTitle("Задание 10. Вывести список неповторяющихся рейтингов.");
+
+            IEnumerable<Review> reviews = store.Reviews.Distinct();
+            PrintToConsole(reviews);
+        }
+
+        public static void Exercise11(Store store)
+        {
+            PrintExerciseTitle("Задание 11. Вывести список .");
+
+            var first = store.Products.Take(4);
+            var second = store.Products.Skip(3);
+            var shared = first.Intersect(second);
+
+            PrintToConsole(shared);
+        }
+
+
         static void Main(string[] args)
         {
             Store store = new();
 
-            PrintProductsToConsole(store.Products);
+            PrintToConsole(store.Products);
 
             Exercise1(store);
             Exercise2(store);
@@ -247,11 +291,13 @@ namespace Linq.Examples
             Exercise7(store);
             Exercise8(store);
             Exercise9(store);
+            Exercise10(store);
+            Exercise11(store);
 
             Console.ReadLine();
         }
 
-        private static void PrintProductsToConsole(IEnumerable<Product> items)
+        private static void PrintToConsole<T>(IEnumerable<T> items)
         {
             foreach (var item in items)
             {
