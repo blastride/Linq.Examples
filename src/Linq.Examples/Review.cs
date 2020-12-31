@@ -4,15 +4,13 @@ namespace Linq.Examples
 {
     public class Review : IEquatable<Review>
     {
-        // public long Id { get; set; }
-
         public long ProductId { get; set; }
 
         public int Rating { get; set; }
 
         public override string ToString()
         {
-            return $"Рейтинг: {Rating} продукта с ид = {ProductId}";
+            return $"Оценка продукта с ID = {ProductId}: {Rating}";
         }
 
         public bool Equals(Review other)
