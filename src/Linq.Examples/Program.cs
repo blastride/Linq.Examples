@@ -256,18 +256,6 @@ namespace Linq.Examples
                 .Average();
 
             Console.WriteLine($"Средняя оценка: {avgRating3}.{Environment.NewLine}");
-
-            //Правильный подход без захвата ссылки на переменную.
-            long productId = asus.Id;
-
-            double avgRating = store
-                .Reviews
-                .Where(r => r.ProductId == productId)
-                .Select(r => r.Rating)
-                .DefaultIfEmpty(defaultRating)
-                .Average();
-
-            Console.WriteLine($"Средняя оценка: {avgRating}.{Environment.NewLine}");
         }
 
         public static void Exercise10(Store store)
