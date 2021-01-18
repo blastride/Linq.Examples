@@ -72,11 +72,11 @@ namespace Linq.Examples
                 .Products
                 .FilterBy(Category.Laptops)
                 .PriceLessOrEqualThan(maxPrice)
-                .OrderByDescending(p => p.Price);
+                .OrderBy(p => p.Price);
 
             IEnumerable<Product> laptops = from product in store.Products
                 where product.Category == Category.Laptops && product.Price <= maxPrice
-                orderby product.Price descending
+                orderby product.Price
                 select product;
 
             Console.WriteLine("Точечная нотация.");
@@ -145,7 +145,10 @@ namespace Linq.Examples
         {
             PrintExerciseTitle("Задание 6. Вывести список всех категорий товаров в алфавитном порядке.");
 
-            var categories = store.Products.Select(p => p.Category).Distinct().OrderBy(cat => cat);
+            var categories = store.Products
+                .Select(p => p.Category)
+                .Distinct()
+                .OrderBy(cat => cat);
 
             var categories2 = (from product in store.Products
                               select product.Category
